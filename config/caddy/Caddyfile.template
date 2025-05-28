@@ -1,0 +1,38 @@
+:80 {
+    basic_auth {
+        ${CADDY_ADMIN_USER} ${HASHED_PASS}
+    }
+
+    @auth {
+        header Cookie *auth=valid_token*
+    }
+
+    handle @auth {
+        handle_path /srun/* {
+            reverse_proxy localhost:9001
+        }
+
+        handle_path /files/* {
+            reverse_proxy localhost:9002
+        }
+
+        # Example for future apps:
+        # handle_path /app2/* {
+        #     reverse_proxy localhost:9000
+        # }
+    }
+
+    # Public Routes (No Auth Required)
+    handle_path /login* {
+        reverse_proxy localhost:5000
+    }
+
+    handle_path /logout* {
+        reverse_proxy localhost:5000
+    }
+
+    # Catch-All: Redirect unauthenticated users to login page
+    handle {
+        redir /login 302
+    }
+}
