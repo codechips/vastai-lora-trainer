@@ -1,8 +1,12 @@
-FROM nvidia/cuda:12.1.0-runtime-ubuntu22.04
+# Stage 1: Base
+FROM nvidia/cuda:12.2.2-base-ubuntu22.04 as base
 
-# Set environment variables globally to avoid interactive prompts
-ENV DEBIAN_FRONTEND=noninteractive
-ENV TZ=UTC
+ENV DEBIAN_FRONTEND=noninteractive \
+    PIP_NO_CACHE_DIR=on \
+    SHELL=/bin/bash \
+    TZ=UTC
+
+USER root
 
 # Install dependencies
 RUN apt update && apt install -y \
@@ -15,10 +19,14 @@ RUN apt update && apt install -y \
     wget \
     python3-pip \
     gettext \
+    unzip \
     tzdata && \
     ln -fs /usr/share/zoneinfo/$TZ /etc/localtime && \
     dpkg-reconfigure -f noninteractive tzdata && \
     rm -rf /var/lib/apt/lists/*
+
+# Stage 2: Install SD tools
+FROM base as setup
 
 # Install uv
 RUN curl -LsSf https://astral.sh/uv/install.sh | sh
@@ -35,6 +43,7 @@ RUN curl -L https://github.com/codechips/srun/releases/download/v0.3.3/srun_linu
 
 # Install Filebrowser
 RUN curl -fsSL https://raw.githubusercontent.com/filebrowser/get/master/get.sh | bash
+RUN mkdir /workspace
 
 # Copy app files
 COPY start.sh /start.sh

@@ -2,13 +2,13 @@
 set -e
 
 # Check for required env variables
-if [ -z "$CADDY_ADMIN_USER" ] || [ -z "$CADDY_ADMIN_PASS" ]; then
-  echo "ERROR: CADDY_ADMIN_USER and CADDY_ADMIN_PASS must be set."
+if [ -z "$ADMIN_USER" ] || [ -z "$ADMIN_PASS" ]; then
+  echo "ERROR: ADMIN_USER and ADMIN_PASS must be set."
   exit 1
 fi
 
 # Generate hashed password for Caddy basic_auth
-HASHED_PASS=$(caddy hash-password --plaintext "$CADDY_ADMIN_PASS")
+HASHED_PASS=$(caddy hash-password --plaintext "$ADMIN_PASS")
 
 export HASHED_PASS
 
@@ -25,13 +25,9 @@ filebrowser config set \
     --port=9002 \
     --auth.method=proxy \
     --auth.header=X-FAuth-Header \
-    --root=/etc \
+    --root=/workspace \
     --baseurl=/files
 filebrowser &
-
-# echo "Starting login app..."
-# pip3 install flask
-# python3 /opt/login/app.py &
 
 echo "Starting Caddy..."
 exec caddy run --config /etc/caddy/Caddyfile --adapter caddyfile --resume --environ

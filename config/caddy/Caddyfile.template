@@ -1,6 +1,6 @@
 :80 {
         basic_auth {
-            ${CADDY_ADMIN_USER} ${HASHED_PASS}
+            ${ADMIN_USER} ${HASHED_PASS}
         }
 
         handle / {
