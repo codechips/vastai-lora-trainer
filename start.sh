@@ -12,18 +12,26 @@ HASHED_PASS=$(caddy hash-password --plaintext "$CADDY_ADMIN_PASS")
 
 export HASHED_PASS
 
-# Generate final Caddyfile from the template
-envsubst </Caddyfile.template >/etc/caddy/Caddyfile
+# Generate Caddyfile with correct template path
+envsubst < /root/Caddyfile.template > /etc/caddy/Caddyfile
 
 echo "Starting srun..."
-GIN_MODE=release /opt/srun/srun -port 9001 &
+GIN_MODE=release /opt/srun/srun -port=9001 -trusted-proxies="127.0.0.1" &
 
 echo "Starting Filebrowser..."
-filebrowser -r /data -p 9002 &
+filebrowser config init
+filebrowser config set \
+    --address=0.0.0.0 \
+    --port=9002 \
+    --auth.method=proxy \
+    --auth.header=X-FAuth-Header \
+    --root=/etc \
+    --baseurl=/files
+filebrowser &
 
-pip3 install flask
-python3 /opt/login/app.py &
+# echo "Starting login app..."
+# pip3 install flask
+# python3 /opt/login/app.py &
 
 echo "Starting Caddy..."
-# exec caddy run --config /etc/caddy/Caddyfile --adapter caddyfile
 exec caddy run --config /etc/caddy/Caddyfile --adapter caddyfile --resume --environ

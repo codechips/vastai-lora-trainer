@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Welcome</title>
+        <style>
+            body {
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                height: 100vh;
+                background-color: #f0f2f5;
+                font-family: Arial, sans-serif;
+                margin: 0;
+            }
+            .container {
+                text-align: center;
+            }
+            h1 {
+                color: #333;
+                margin-bottom: 20px; /* Added margin for spacing */
+            }
+            .link-button {
+                display: block;
+                width: 300px;
+                padding: 18px 0;
+                margin: 15px auto;
+                font-size: 1.6em;
+                color: white;
+                background-color: #007bff;
+                border: none;
+                border-radius: 0;
+                text-decoration: none;
+                transition:
+                    background-color 0.3s ease,
+                    transform 0.2s ease;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            }
+            .link-button:hover {
+                background-color: #0056b3;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1>LoRa Trainer</h1>
+            <a href="/srun/" class="link-button" target="_blank"
+                >srun - script runner</a
+            >
+            <a href="/files/" class="link-button" target="_blank"
+                >file browser</a
+            >
+        </div>
+    </body>
+</html>

@@ -1,8 +1,0 @@
-{
-  "port": 9002,
-  "baseURL": "",
-  "address": "0.0.0.0",
-  "log": "stdout",
-  "database": "/root/.filebrowser.db",
-  "root": "/workspace"
-}

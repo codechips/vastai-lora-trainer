@@ -1,38 +1,27 @@
 :80 {
-    basic_auth {
-        ${CADDY_ADMIN_USER} ${HASHED_PASS}
-    }
+        basic_auth {
+            ${CADDY_ADMIN_USER} ${HASHED_PASS}
+        }
 
-    @auth {
-        header Cookie *auth=valid_token*
-    }
+        handle / {
+            root * /root/static
+            file_server
+        }
 
-    handle @auth {
-        handle_path /srun/* {
-            reverse_proxy localhost:9001
+        handle /srun* {
+            uri strip_prefix /srun
+            reverse_proxy http://localhost:9001 {
+                header_up X-Forwarded-Prefix /srun
+            }
         }
 
         handle_path /files/* {
-            reverse_proxy localhost:9002
+            uri strip_prefix /files
+            reverse_proxy http://127.0.0.1:9002 {
+                header_up X-Forwarded-Proto {scheme}
+                header_up X-Forwarded-Host {host}
+                header_up X-Real-IP {remote}
+                header_up X-FAuth-Header admin
+            }
         }
-
-        # Example for future apps:
-        # handle_path /app2/* {
-        #     reverse_proxy localhost:9000
-        # }
     }
-
-    # Public Routes (No Auth Required)
-    handle_path /login* {
-        reverse_proxy localhost:5000
-    }
-
-    handle_path /logout* {
-        reverse_proxy localhost:5000
-    }
-
-    # Catch-All: Redirect unauthenticated users to login page
-    handle {
-        redir /login 302
-    }
-}
